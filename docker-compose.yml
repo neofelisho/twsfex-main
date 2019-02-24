@@ -1,0 +1,71 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    #    environment:
+    #      MONGO_INITDB_ROOT_USERNAME: root
+    #      MONGO_INITDB_ROOT_PASSWORD: 123456
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    networks:
+      - twsfex-backend
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - 8081:8081
+    #    environment:
+    #      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+    #      ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
+    networks:
+      - twsfex-backend
+    deploy:
+      mode: global
+      restart_policy:
+        condition: any
+  mongo-api:
+    build: https://github.com/neofelisho/twsfex-api.git
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - twsfex-backend
+    deploy:
+      mode: global
+      restart_policy:
+        condition: any
+#  redis:
+#    image: redis:alpine
+#    restart: always
+#    networks:
+#      - twsfex-frontend
+#    deploy:
+#      replicas: 1
+#      restart_policy:
+#        condition: any
+#  data-analyzer:
+#    build:
+#    networks:
+#      - twsfex-frontend
+#      - twsfex-backend
+#    deploy:
+#      mode: global
+#      restart_policy:
+#        condition: on-failure
+
+volumes:
+  mongo-data:
+  mongo-config:
+
+networks:
+  twsfex-backend:
+  twsfex-frontend:
